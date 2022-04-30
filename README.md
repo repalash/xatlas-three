@@ -2,10 +2,12 @@
 
 ## Examples
 Unwrap geometry and debug UV
-[./public/uv-unwrap.html](./public/uv-unwrap.html)
+[./public/uvs-debug.html](./public/uvs-debug.html) <br> 
+Demo: https://repalash.com/xatlas-three/public/uvs-debug.html
 
 Pack multiple geometries into a single atlas and unwrap GLTF
-[./public/pack-atlas.html](./public/pack-atlas.html)
+[./public/pack-atlas.html](./public/pack-atlas.html) <br> 
+Demo: https://repalash.com/xatlas-three/public/pack-atlas.html
 
 ## Usage
 Install via [npm](https://www.npmjs.com/package/xatlas-three) by running:
