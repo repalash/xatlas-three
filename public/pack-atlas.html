@@ -64,10 +64,14 @@
         texelsPerUnit: 0
     }
     unwrapper.useNormals = true
+    unwrapper.timeUnwrap = true // Logs time of unwrapping
+    unwrapper.logProgress = true // Logs unwrapping progress bar
 
     const testMap = new THREE.TextureLoader().load( './check-map.png' );
 
-    unwrapper.loadLibrary((mode, progress)=>{console.log(mode, progress);},
+    unwrapper.loadLibrary((mode, progress)=>{
+        // console.log(mode, progress);
+    },
         // '/node_modules/xatlasjs/dist/xatlas.wasm',
         // window.location.origin + '/node_modules/xatlasjs/dist/xatlas.js',
         'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.wasm',
@@ -162,6 +166,7 @@
                         if(geom.boundingSphere.radius > 500)
                             return
 
+                        geom.userData.worldScale = child.getWorldScale(new THREE.Vector3()).toArray();
                         geoms.push( geom );
 
                     }
@@ -176,6 +181,10 @@
 
                 // Pack all geometries into a single atlas
                 await unwrapper.packAtlas(geoms, 'uv');
+
+                for (const geom of geoms) {
+                    delete geom.userData.worldScale;
+                }
             })()
         }
 

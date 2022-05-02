@@ -85,6 +85,8 @@
         texelsPerUnit: 0
     }
     unwrapper.useNormals = true
+    unwrapper.timeUnwrap = true // Logs time of unwrapping
+    unwrapper.logProgress = true // Logs unwrapping progress bar
 
     async function test( name, geometry ) {
 

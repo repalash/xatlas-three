@@ -1,4 +1,9 @@
 # xAtlas-three
+[xAtlas](https://github.com/jpcy/xatlas) + [three.js](https://github.com/mrdoob/three.js): Mesh parameterization / UV unwrapping module for three.js in wasm with webworkers.
+
+Can be used to unwrap UVs in `BufferGeometry` or pack multiple geometries into a single atlas for lightmap/AO baking.
+
+To use xatlas in JS without three.js you can use [xatlas.js](https://github.com/repalash/xatlas.js) directly.
 
 ## Examples
 Unwrap geometry and debug UV
@@ -77,7 +82,9 @@ To Pack multiple geometries into a single atlas
 ```
 Here, generated UVs will be written to the 'uv2' attribute of each geometry, this can be customized by passing in a custom attribute name.
 
-Note: xatlas might add or remove some vertices data.
+Note: 
+* xatlas might add or remove some vertices data.
+* interleaved geometry is not yet supported.
 
 ## Development
 

@@ -38,7 +38,10 @@ export abstract class BaseUVUnwrapper{
      * @param THREE - for reference to BufferAttribute
      * @param packOptions - options for packing
      * @param chartOptions - options for unwrapping
-     * @param useNormals - If true, will use the normals to calculate the uv     */
+     * @param useNormals - If true, will use the normals to calculate the uv
+     * @param timeUnwrap - Logs the time taken to unwrap geometries
+     * @param logProgress - Logs the unwrapping progress
+     */
     constructor(
         public THREE: { BufferAttribute: Class<BufferAttribute> },
         public packOptions: PackOptions = {
@@ -46,6 +49,8 @@ export abstract class BaseUVUnwrapper{
         },
         public chartOptions: ChartOptions = {},
         public useNormals: boolean = false,
+        public timeUnwrap: boolean = false,
+        public logProgress: boolean = false,
     ) {
         this.xAtlas = this._createXAtlas()
     }
@@ -88,7 +93,7 @@ export abstract class BaseUVUnwrapper{
         const useUvs = this.chartOptions.useInputMeshUvs;
 
         while (this._isUnwrapping){
-            console.log("unwrapping another mesh, waiting 100 ms");
+            console.log("xatlas-three: unwrapping another mesh, waiting 100 ms");
             await new Promise(r => setTimeout(r, 100));
         }
         // if(!(xAtlas.loaded)) { // when not using worker. todo
@@ -97,31 +102,31 @@ export abstract class BaseUVUnwrapper{
         // }
         this._isUnwrapping = true;
 
-        await this.xAtlas.api.setProgressLogging(true);
+        await this.xAtlas.api.setProgressLogging(this.logProgress);
         await this.xAtlas.api.createAtlas();
         let meshAdded = [];
         let tag = ""; // for time logging
         for(let mesh of nodeList){
             let {uuid, index, attributes} = mesh;
-            const scaled = 1 //todo
+            const scaled = mesh.userData.worldScale || 1; // can be [number, number, number] or number
 
             // if (unwrap === false) continue;
 
             meshAdded.push(uuid);
             if(!index || !attributes.position || attributes.position!.itemSize !== 3){
-                console.warn("Geometry not supported: ", mesh)
+                console.warn("xatlas-three: Geometry not supported: ", mesh)
                 continue;
             }
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
-            console.log(typeof index.array)
-            console.time(tag);
+            // console.log(typeof index.array)
+            if(this.timeUnwrap) console.time(tag);
             await this.xAtlas.api.addMesh(index.array, attributes.position.array, attributes.normal ? attributes.normal.array: undefined, attributes.uv ? attributes.uv.array : undefined, uuid, this.useNormals, useUvs, scaled);
-            console.timeEnd(tag);
+            if(this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
-        console.time(tag);
+        if(this.timeUnwrap) console.time(tag);
         let meshes = await this.xAtlas.api.generateAtlas(this.chartOptions, this.packOptions, true);
-        console.timeEnd(tag);
+        if(this.timeUnwrap) console.timeEnd(tag);
         let ret = [];
         for(let m of meshes){
             /**
@@ -129,7 +134,7 @@ export abstract class BaseUVUnwrapper{
              */
             let mesh = nodeList.find(n => n.uuid === m.mesh)
             if(!mesh) {
-                console.error("Mesh not found: ", m.mesh)
+                console.error("xatlas-three: Mesh not found: ", m.mesh)
                 continue;
             }
             // if(mesh.getAttribute("position"))
