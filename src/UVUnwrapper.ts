@@ -45,7 +45,7 @@ export abstract class BaseUVUnwrapper{
             resolution: 2048,
         },
         public chartOptions: ChartOptions = {},
-        public useNormals: false,
+        public useNormals: boolean = false,
     ) {
         this.xAtlas = this._createXAtlas()
     }
@@ -163,7 +163,6 @@ export abstract class BaseUVUnwrapper{
      * @param geometry
      * @param outputUv
      * @param inputUv
-     * @param useNormals
      */
     public async unwrapGeometry(geometry: BufferGeometry, outputUv: 'uv'|'uv2' = 'uv', inputUv: 'uv'|'uv2' = 'uv2'){
         return this.packAtlas([geometry], outputUv, inputUv);

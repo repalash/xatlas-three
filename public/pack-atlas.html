@@ -49,7 +49,7 @@
         roundnessWeight: 0.009999999776482582,
         straightnessWeight: 6,
         textureSeamWeight: 0.5,
-        useInputMeshUvs: false,
+        useInputMeshUvs: true,
     }
     unwrapper.packOptions = {
         bilinear: true,
@@ -63,6 +63,7 @@
         rotateChartsToAxis: true,
         texelsPerUnit: 0
     }
+    unwrapper.useNormals = true
 
     const testMap = new THREE.TextureLoader().load( './check-map.png' );
 
