@@ -15,6 +15,7 @@
             margin-top: 60px;
             margin-bottom: 30px;
             font-weight: normal;
+            font-size: 1rem;
         }
         canvas {
             width: 100%;
@@ -90,15 +91,24 @@
             geometry = mergeVertices(geometry); // convert to indexed geometry
         }
 
-        await unwrapper.unwrapGeometry( geometry );
 
         const d = document.createElement( 'div' );
+        const d1 = document.createElement( 'div' );
+        const d2 = document.createElement( 'div' );
+        d.style.display = 'flex'
+        d.style.gap = '2rem'
+        d1.style.flex = '1'
+        d2.style.flex = '1'
 
-        d.innerHTML = '<h3>' + name + '</h3>';
-
-        d.appendChild( UVsDebug( geometry ) );
+        d1.innerHTML = '<h3>' + name + '</h3>';
+        d1.appendChild( UVsDebug( geometry ) );
+        await unwrapper.unwrapGeometry( geometry );
+        d2.innerHTML = '<h3> Unwrapped </h3>';
+        d2.appendChild( UVsDebug( geometry ) );
 
         document.body.appendChild( d );
+        d.appendChild( d1 );
+        d.appendChild( d2 );
 
     }
 
@@ -112,30 +122,32 @@
 
     //
 
-    unwrapper.loadLibrary((mode, progress)=>{console.log(mode, progress);},
+    unwrapper.loadLibrary((mode, progress)=>{
+        // console.log(mode, progress);
+    },
         // '/node_modules/xatlasjs/dist/xatlas.wasm',
         // window.location.origin + '/node_modules/xatlasjs/dist/xatlas.js',
         'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.wasm',
         'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.js',
     ).then(async function () {
 
-        await test( 'new THREE.PlaneGeometry( 100, 100, 4, 4 )', new THREE.PlaneGeometry( 100, 100, 4, 4 ) );
+        await test( 'PlaneGeometry( 100, 100, 4, 4 )', new THREE.PlaneGeometry( 100, 100, 4, 4 ) );
 
-        await test( 'new THREE.SphereGeometry( 75, 12, 6 )', new THREE.SphereGeometry( 75, 12, 6 ) );
+        await test( 'SphereGeometry( 75, 12, 6 )', new THREE.SphereGeometry( 75, 12, 6 ) );
 
-        await test( 'new THREE.IcosahedronGeometry( 30, 1 )', new THREE.IcosahedronGeometry( 30, 1 ) );
+        await test( 'IcosahedronGeometry( 30, 1 )', new THREE.IcosahedronGeometry( 30, 1 ) );
 
-        await test( 'new THREE.OctahedronGeometry( 30, 2 )', new THREE.OctahedronGeometry( 30, 2 ) );
+        await test( 'OctahedronGeometry( 30, 2 )', new THREE.OctahedronGeometry( 30, 2 ) );
 
-        await test( 'new THREE.CylinderGeometry( 25, 75, 100, 10, 5 )', new THREE.CylinderGeometry( 25, 75, 100, 10, 5 ) );
+        await test( 'CylinderGeometry( 25, 75, 100, 10, 5 )', new THREE.CylinderGeometry( 25, 75, 100, 10, 5 ) );
 
-        await test( 'new THREE.BoxGeometry( 100, 100, 100, 4, 4, 4 )', new THREE.BoxGeometry( 100, 100, 100, 4, 4, 4 ) );
+        await test( 'BoxGeometry( 100, 100, 100, 4, 4, 4 )', new THREE.BoxGeometry( 100, 100, 100, 4, 4, 4 ) );
 
-        await test( 'new THREE.LatheGeometry( points, 8 )', new THREE.LatheGeometry( points, 8 ) );
+        await test( 'LatheGeometry( points, 8 )', new THREE.LatheGeometry( points, 8 ) );
 
-        await test( 'new THREE.TorusGeometry( 50, 20, 8, 8 )', new THREE.TorusGeometry( 50, 20, 8, 8 ) );
+        await test( 'TorusGeometry( 50, 20, 8, 8 )', new THREE.TorusGeometry( 50, 20, 8, 8 ) );
 
-        await test( 'new THREE.TorusKnotGeometry( 50, 10, 12, 6 )', new THREE.TorusKnotGeometry( 50, 10, 12, 6 ) );
+        await test( 'TorusKnotGeometry( 50, 10, 12, 6 )', new THREE.TorusKnotGeometry( 50, 10, 12, 6 ) );
 
     });
 
