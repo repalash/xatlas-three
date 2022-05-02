@@ -63,11 +63,11 @@
         fixWinding: false,
         maxBoundaryLength: 0,
         maxChartArea: 0,
-        maxCost: 2,
+        maxCost: 3,
         maxIterations: 1,
         normalDeviationWeight: 2,
         normalSeamWeight: 4,
-        roundnessWeight: 0.009999999776482582,
+        roundnessWeight: 0.001,
         straightnessWeight: 6,
         textureSeamWeight: 0.5,
         useInputMeshUvs: false,
@@ -84,6 +84,7 @@
         rotateChartsToAxis: true,
         texelsPerUnit: 0
     }
+    unwrapper.useNormals = true
 
     async function test( name, geometry ) {
 
