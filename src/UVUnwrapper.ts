@@ -78,7 +78,6 @@ export abstract class BaseUVUnwrapper{
 
     /**
      * Pack multiple geometry into a single atlas
-     * @param THREE
      * @param nodeList - list of geometries to unwrap
      * @param outputUv - Attribute to write the output uv to
      * @param inputUv - Attribute to write the input uv to (if any)
@@ -120,7 +119,7 @@ export abstract class BaseUVUnwrapper{
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
             if(this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, attributes.position.array, attributes.normal ? attributes.normal.array: undefined, attributes.uv ? attributes.uv.array : undefined, uuid, this.useNormals, useUvs, scaled);
+            await this.xAtlas.api.addMesh(index.array, (attributes.position as BufferAttribute).array, attributes.normal ? (attributes.normal as BufferAttribute).array: undefined, attributes.uv ? (attributes.uv as BufferAttribute).array : undefined, uuid, this.useNormals, useUvs, scaled);
             if(this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
