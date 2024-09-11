@@ -1,5 +1,5 @@
 import type { BufferGeometry, BufferAttribute } from "three";
-export declare type Class<T> = new (...args: any[]) => T;
+export type Class<T> = new (...args: any[]) => T;
 export interface ChartOptions {
     maxIterations?: number;
     straightnessWeight?: number;
@@ -25,6 +25,12 @@ export interface PackOptions {
     bruteForce?: boolean;
     texelsPerUnit?: number;
 }
+/**
+ * Base class for unwrapping three.js geometries using xatlas. Check the usage guide at https://github.com/repalash/xatlas-three
+ * @license
+ * Copyright 2022 repalash
+ * SPDX-License-Identifier: MIT
+ */
 export declare abstract class BaseUVUnwrapper {
     THREE: {
         BufferAttribute: Class<BufferAttribute>;

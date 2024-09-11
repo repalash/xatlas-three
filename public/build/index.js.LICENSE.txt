@@ -1,0 +1,12 @@
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Base class for unwrapping three.js geometries using xatlas. Check the usage guide at https://github.com/repalash/xatlas-three
+ * @license
+ * Copyright 2022 repalash
+ * SPDX-License-Identifier: MIT
+ */
