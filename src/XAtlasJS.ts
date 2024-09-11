@@ -8,7 +8,7 @@ export class XAtlasJS extends BaseXAtlas {
         if (this.api) return
         this.api = new XAtlasAPI()(
             onLoad,
-            (path: string, dir: string) => (path === "xatlas_web.wasm" ? wasmFilePath : path + dir),
+            (path: string, dir: string) => (path === "xatlas.wasm" ? wasmFilePath : path + dir),
             onProgress,
         )
     }

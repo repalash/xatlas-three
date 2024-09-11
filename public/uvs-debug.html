@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>xatlas.js - uv mapping tests</title>
-    <meta charset=utf-8 />
+    <meta charset=utf-8/>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
         body {
@@ -11,12 +11,14 @@
             text-align: center;
             font-family: sans-serif;
         }
+
         h3 {
             margin-top: 60px;
             margin-bottom: 30px;
             font-weight: normal;
             font-size: 1rem;
         }
+
         canvas {
             width: 100%;
         }
@@ -30,27 +32,29 @@
 <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
 
 <div id="info">
-    xatlas.js - <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - UV Unwrapping - <a href="https://github.com/repalash" target="_blank" rel="noopener">repalash</a><br/>
-    <a href="https://github.com/repalash/xatlas-three/tree/master/public/uvs-debug.html" target="_blank" rel="noopener">View source</a><br/>
+    xatlas.js - <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - UV Unwrapping - <a
+    href="https://repalash.com" target="_blank" rel="noopener">repalash</a><br/>
+    <a href="https://github.com/repalash/xatlas-three/tree/master/public/uvs-debug.html" target="_blank" rel="noopener">View
+        source</a><br/>
 </div>
 
 <script type="importmap">
-			{
-				"imports": {
-					"three": "https://cdn.jsdelivr.net/npm/three@0.139.2/build/three.module.js",
-					"xatlas-three": "./build/index.js"
-				}
-			}
-		</script>
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.139.2/build/three.module.js",
+            "xatlas-three": "./build/index.js"
+        }
+    }
+</script>
 
 <script type="module">
 
     import * as THREE from 'three';
 
-    import { UVUnwrapper } from 'xatlas-three';
+    import {UVUnwrapper} from 'xatlas-three';
 
-    import { UVsDebug } from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/UVsDebug.js';
-    import { mergeVertices } from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/BufferGeometryUtils.js';
+    import {UVsDebug} from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/UVsDebug.js';
+    import {mergeVertices} from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/BufferGeometryUtils.js';
 
 
     /*
@@ -88,69 +92,69 @@
     unwrapper.timeUnwrap = true // Logs time of unwrapping
     unwrapper.logProgress = true // Logs unwrapping progress bar
 
-    async function test( name, geometry ) {
+    async function test(name, geometry) {
 
-        if(!geometry.index){
+        if (!geometry.index) {
             geometry = mergeVertices(geometry); // convert to indexed geometry
         }
 
 
-        const d = document.createElement( 'div' );
-        const d1 = document.createElement( 'div' );
-        const d2 = document.createElement( 'div' );
+        const d = document.createElement('div');
+        const d1 = document.createElement('div');
+        const d2 = document.createElement('div');
         d.style.display = 'flex'
         d.style.gap = '2rem'
         d1.style.flex = '1'
         d2.style.flex = '1'
 
         d1.innerHTML = '<h3>' + name + '</h3>';
-        d1.appendChild( UVsDebug( geometry ) );
-        await unwrapper.unwrapGeometry( geometry );
+        d1.appendChild(UVsDebug(geometry));
+        await unwrapper.unwrapGeometry(geometry);
         d2.innerHTML = '<h3> Unwrapped </h3>';
-        d2.appendChild( UVsDebug( geometry ) );
+        d2.appendChild(UVsDebug(geometry));
 
-        document.body.appendChild( d );
-        d.appendChild( d1 );
-        d.appendChild( d2 );
+        document.body.appendChild(d);
+        d.appendChild(d1);
+        d.appendChild(d2);
 
     }
 
     const points = [];
 
-    for ( let i = 0; i < 10; i ++ ) {
+    for (let i = 0; i < 10; i++) {
 
-        points.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 15 + 50, ( i - 5 ) * 2 ) );
+        points.push(new THREE.Vector2(Math.sin(i * 0.2) * 15 + 50, (i - 5) * 2));
 
     }
 
     //
 
-    unwrapper.loadLibrary((mode, progress)=>{
-        // console.log(mode, progress);
-    },
-        // '/node_modules/xatlasjs/dist/xatlas.wasm',
+    unwrapper.loadLibrary((mode, progress) => {
+            // console.log(mode, progress);
+        },
+        // window.location.origin + '/node_modules/xatlasjs/dist/xatlas.wasm',
         // window.location.origin + '/node_modules/xatlasjs/dist/xatlas.js',
-        'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.wasm',
-        'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.js',
+        'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0-dev.1/dist/xatlas.wasm',
+        'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0-dev.1/dist/xatlas.js',
     ).then(async function () {
 
-        await test( 'PlaneGeometry( 100, 100, 4, 4 )', new THREE.PlaneGeometry( 100, 100, 4, 4 ) );
+        await test('PlaneGeometry( 100, 100, 4, 4 )', new THREE.PlaneGeometry(100, 100, 4, 4));
 
-        await test( 'SphereGeometry( 75, 12, 6 )', new THREE.SphereGeometry( 75, 12, 6 ) );
+        await test('SphereGeometry( 75, 12, 6 )', new THREE.SphereGeometry(75, 12, 6));
 
-        await test( 'IcosahedronGeometry( 30, 1 )', new THREE.IcosahedronGeometry( 30, 1 ) );
+        await test('IcosahedronGeometry( 30, 1 )', new THREE.IcosahedronGeometry(30, 1));
 
-        await test( 'OctahedronGeometry( 30, 2 )', new THREE.OctahedronGeometry( 30, 2 ) );
+        await test('OctahedronGeometry( 30, 2 )', new THREE.OctahedronGeometry(30, 2));
 
-        await test( 'CylinderGeometry( 25, 75, 100, 10, 5 )', new THREE.CylinderGeometry( 25, 75, 100, 10, 5 ) );
+        await test('CylinderGeometry( 25, 75, 100, 10, 5 )', new THREE.CylinderGeometry(25, 75, 100, 10, 5));
 
-        await test( 'BoxGeometry( 100, 100, 100, 4, 4, 4 )', new THREE.BoxGeometry( 100, 100, 100, 4, 4, 4 ) );
+        await test('BoxGeometry( 100, 100, 100, 4, 4, 4 )', new THREE.BoxGeometry(100, 100, 100, 4, 4, 4));
 
-        await test( 'LatheGeometry( points, 8 )', new THREE.LatheGeometry( points, 8 ) );
+        await test('LatheGeometry( points, 8 )', new THREE.LatheGeometry(points, 8));
 
-        await test( 'TorusGeometry( 50, 20, 8, 8 )', new THREE.TorusGeometry( 50, 20, 8, 8 ) );
+        await test('TorusGeometry( 50, 20, 8, 8 )', new THREE.TorusGeometry(50, 20, 8, 8));
 
-        await test( 'TorusKnotGeometry( 50, 10, 12, 6 )', new THREE.TorusKnotGeometry( 50, 10, 12, 6 ) );
+        await test('TorusKnotGeometry( 50, 10, 12, 6 )', new THREE.TorusKnotGeometry(50, 10, 12, 6));
 
     });
 

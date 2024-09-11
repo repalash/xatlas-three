@@ -30,6 +30,12 @@ export interface PackOptions{
     texelsPerUnit?: number
 }
 
+/**
+ * Base class for unwrapping three.js geometries using xatlas. Check the usage guide at https://github.com/repalash/xatlas-three
+ * @license
+ * Copyright 2022 repalash
+ * SPDX-License-Identifier: MIT
+ */
 export abstract class BaseUVUnwrapper{
     private xAtlas: XAtlasWebWorker | XAtlasJS;
 
@@ -59,11 +65,7 @@ export abstract class BaseUVUnwrapper{
         if(this._libraryLoaded) return
         await new Promise<void>((resolve, reject) => {
             try {
-                this.xAtlas.init(
-                    () => {
-                        resolve()
-                    }, onProgress, wasmFilePath, workerFilePath,
-                )
+                this.xAtlas.init(resolve, onProgress, wasmFilePath, workerFilePath)
             } catch (e) {
                 reject(e)
             }
@@ -124,10 +126,11 @@ export abstract class BaseUVUnwrapper{
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
         if(this.timeUnwrap) console.time(tag);
-        let meshes = await this.xAtlas.api.generateAtlas(this.chartOptions, this.packOptions, true);
+        const atlas = await this.xAtlas.api.generateAtlas(this.chartOptions, this.packOptions, true);
         if(this.timeUnwrap) console.timeEnd(tag);
         let ret = [];
-        for(let m of meshes){
+        console.log(atlas)
+        for(let m of atlas.meshes){
             /**
              * @type {Mesh}
              */
@@ -149,9 +152,19 @@ export abstract class BaseUVUnwrapper{
 
             if(m.vertex.vertices) mesh.setAttribute('position', new this.THREE.BufferAttribute(m.vertex.vertices, 3, false));
             if(m.vertex.normals) mesh.setAttribute('normal', new this.THREE.BufferAttribute(m.vertex.normals, 3, true));
+            if(m.vertex.tangents) mesh.setAttribute('tangent', new this.THREE.BufferAttribute(m.vertex.tangents, 4, true));
             if(m.vertex.coords1) mesh.setAttribute(outputUv, new this.THREE.BufferAttribute(m.vertex.coords1, 2, false));
             if(m.vertex.coords&&outputUv!==inputUv) mesh.setAttribute(inputUv, new this.THREE.BufferAttribute(m.vertex.coords, 2, false));
             if(m.index) mesh.setIndex(new this.THREE.BufferAttribute(m.index, 1, false));
+            if(m.subMeshes){
+                console.log(m.subMeshes)
+                if(mesh.groups?.length){
+                    console.warn("xatlas-three: Mesh already has groups, clearing them")
+                    mesh.clearGroups();
+                }
+                for(let subMesh of m.subMeshes) mesh.addGroup(subMesh.start, subMesh.count, 0);
+            }
+            console.log(mesh)
 
             ret.push(mesh);
         }

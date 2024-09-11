@@ -58,8 +58,8 @@ Next load the [xatlasjs](https://github.com/repalash/xatlas.js) library:
 
 await unwrapper.loadLibrary(
     (mode, progress)=>{console.log(mode, progress);},
-    'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.wasm',
-    'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.js',
+    'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0/dist/xatlas.wasm',
+    'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0/dist/xatlas.js',
 ); // Make sure to wait for the library to load before unwrapping.
 
 ```
