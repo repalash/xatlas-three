@@ -158,16 +158,14 @@ export abstract class BaseUVUnwrapper{
             const oldIndexes = m.oldIndexes;
             const attributes = mesh.attributes;
             for (const key in attributes) {
-
+                // skip any attributes that have already been set.
                 if (
                     key === 'position' ||
                     key === 'normal' ||
                     key === outputUv ||
                     key === inputUv
                 ) {
-
                     continue;
-
                 }
 
                 // old attribute info
@@ -183,18 +181,13 @@ export abstract class BaseUVUnwrapper{
 
                 // copy the data
                 for ( let i = 0, l = oldIndexes.length; i < l; i ++ ) {
-
                     const index = oldIndexes[ i ];
                     for ( let c = 0; c < itemSize; c ++ ) {
-
                         newArray[ i * itemSize + c ] = oldArray[ index * itemSize + c ];
-
                     }
-
                 }
 
                 mesh.setAttribute(key, newAttribute);
-
             }
 
             ret.push(mesh);
