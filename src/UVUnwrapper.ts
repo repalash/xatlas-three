@@ -1,6 +1,7 @@
-import type {BufferGeometry, Mesh, BufferAttribute} from "three";
+import type {BufferGeometry, Mesh} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
+import {BufferAttribute} from "three";
 
 export type Class<T> = new (...args: any[]) => T
 
@@ -152,6 +153,49 @@ export abstract class BaseUVUnwrapper{
             if(m.vertex.coords1) mesh.setAttribute(outputUv, new this.THREE.BufferAttribute(m.vertex.coords1, 2, false));
             if(m.vertex.coords&&outputUv!==inputUv) mesh.setAttribute(inputUv, new this.THREE.BufferAttribute(m.vertex.coords, 2, false));
             if(m.index) mesh.setIndex(new this.THREE.BufferAttribute(m.index, 1, false));
+
+            // convert any remaining buffer attributes
+            const oldIndexes = m.oldIndexes;
+            const attributes = mesh.attributes;
+            for (const key in attributes) {
+
+                if (
+                    key === 'position' ||
+                    key === 'normal' ||
+                    key === outputUv ||
+                    key === inputUv
+                ) {
+
+                    continue;
+
+                }
+
+                // old attribute info
+                const oldAttribute = attributes[ key ] as BufferAttribute;
+                const bufferCons = oldAttribute.array.constructor;
+                const itemSize = oldAttribute.itemSize;
+                const oldArray = oldAttribute.array;
+
+                // create a new attribute
+                const newArray = new bufferCons(oldIndexes.length * itemSize);
+                const newAttribute = new BufferAttribute(newArray, itemSize, oldAttribute.normalized);
+                newAttribute.gpuType = oldAttribute.gpuType;
+
+                // copy the data
+                for ( let i = 0, l = oldIndexes.length; i < l; i ++ ) {
+
+                    const index = oldIndexes[ i ];
+                    for ( let c = 0; c < itemSize; c ++ ) {
+
+                        newArray[ i * itemSize + c ] = oldArray[ index * itemSize + c ];
+
+                    }
+
+                }
+
+                mesh.setAttribute(key, newAttribute);
+
+            }
 
             ret.push(mesh);
         }
