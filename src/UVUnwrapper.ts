@@ -84,7 +84,10 @@ export abstract class BaseUVUnwrapper{
      * @param outputUv - Attribute to write the output uv to
      * @param inputUv - Attribute to write the input uv to (if any)
      */
-    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv'|'uv2' = 'uv2', inputUv: 'uv'|'uv2' = 'uv'): Promise<BufferGeometry[]>{
+    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv'|'uv2' = 'uv2', inputUv: 'uv'|'uv2' = 'uv'): Promise<{
+        atlas: any,
+        geometries: BufferGeometry[]
+    }>{
         if(!this._libraryLoaded) {
             console.warn('xatlas-three: library not loaded')
             return [];
@@ -128,7 +131,8 @@ export abstract class BaseUVUnwrapper{
         if(this.timeUnwrap) console.time(tag);
         const atlas = await this.xAtlas.api.generateAtlas(this.chartOptions, this.packOptions, true);
         if(this.timeUnwrap) console.timeEnd(tag);
-        let ret = [];
+
+        let geometries = [];
         console.log(atlas)
         for(let m of atlas.meshes){
             /**
@@ -162,17 +166,20 @@ export abstract class BaseUVUnwrapper{
                     console.warn("xatlas-three: Mesh already has groups, clearing them")
                     mesh.clearGroups();
                 }
-                for(let subMesh of m.subMeshes) mesh.addGroup(subMesh.start, subMesh.count, 0);
+                for(let subMesh of m.subMeshes) mesh.addGroup(subMesh.start, subMesh.count, subMesh.atlasIndex);
             }
             console.log(mesh)
 
-            ret.push(mesh);
+            geometries.push(mesh);
         }
 
         await this.xAtlas.api.destroyAtlas();
         this._isUnwrapping = false;
 
-        return ret;
+        return {
+            atlas,
+            geometries,
+        };
     }
 
     /**
