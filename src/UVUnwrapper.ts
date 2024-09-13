@@ -89,11 +89,10 @@ export abstract class BaseUVUnwrapper{
         geometries: BufferGeometry[]
     }>{
         if(!this._libraryLoaded) {
-            console.warn('xatlas-three: library not loaded')
-            return [];
+            throw new Error('xatlas-three: library not loaded');
         }
-        if (!nodeList) return [];
-        if(nodeList.length < 1) return [];
+        if (!nodeList) throw new Error('xatlas-three: nodeList argument not provided');
+        if(nodeList.length < 1) throw new Error('xatlas-three: nodeList must have non-zero length');
         const useUvs = this.chartOptions.useInputMeshUvs;
 
         while (this._isUnwrapping){
