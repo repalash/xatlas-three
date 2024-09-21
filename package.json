@@ -4,7 +4,8 @@
     "main": "public/build/index.js",
     "module": "public/build/index.js",
     "types": "public/build/index.d.ts",
-    "soruce": "src/index.ts",
+    "type": "module",
+    "source": "src/index.ts",
     "scripts": {
         "start": "webpack serve",
         "build": "webpack --mode=production",
