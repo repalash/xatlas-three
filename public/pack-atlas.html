@@ -187,7 +187,8 @@
                 }
 
                 // Pack all geometries into a single atlas
-                await unwrapper.packAtlas(geoms, 'uv');
+                const atlas = await unwrapper.packAtlas(geoms, 'uv');
+                console.log(atlas)
 
                 for (const geom of geoms) {
                     delete geom.userData.worldScale;

@@ -30,6 +30,18 @@ export interface PackOptions{
     texelsPerUnit?: number
 }
 
+export interface Atlas{
+    width: number,
+    height: number,
+    atlasCount: number,
+    // chartCount: number,
+    meshCount: number,
+    texelsPerUnit: number,
+    geometries: (BufferGeometry & {userData: BufferGeometry['userData'] & {
+        xAtlasSubMeshes?: {index: number, count: number, materialIndex: number}[]
+    }})[],
+}
+
 /**
  * Base class for unwrapping three.js geometries using xatlas. Check the usage guide at https://github.com/repalash/xatlas-three
  * @license
@@ -80,14 +92,13 @@ export abstract class BaseUVUnwrapper{
 
     /**
      * Pack multiple geometry into a single atlas
+     * Writes to the uv2 attribute of the geometry by default. Use outputUv to specify the attribute to write to
+     * Note that the node/meshes are three.js Geometries, not three.js Meshes/Object3D
      * @param nodeList - list of geometries to unwrap
      * @param outputUv - Attribute to write the output uv to
      * @param inputUv - Attribute to write the input uv to (if any)
      */
-    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv'|'uv2' = 'uv2', inputUv: 'uv'|'uv2' = 'uv'): Promise<{
-        atlas: any,
-        geometries: BufferGeometry[]
-    }>{
+    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv'|'uv2' = 'uv2', inputUv: 'uv'|'uv2' = 'uv'): Promise<Atlas>{
         if(!this._libraryLoaded) {
             throw new Error('xatlas-three: library not loaded');
         }
@@ -132,14 +143,11 @@ export abstract class BaseUVUnwrapper{
         if(this.timeUnwrap) console.timeEnd(tag);
 
         let geometries = [];
-        console.log(atlas)
+
         for(let m of atlas.meshes){
-            /**
-             * @type {Mesh}
-             */
             let mesh = nodeList.find(n => n.uuid === m.mesh)
             if(!mesh) {
-                console.error("xatlas-three: Mesh not found: ", m.mesh)
+                console.error("xatlas-three: Geometry not found: ", m.mesh)
                 continue;
             }
             // if(mesh.getAttribute("position"))
@@ -155,19 +163,11 @@ export abstract class BaseUVUnwrapper{
 
             if(m.vertex.vertices) mesh.setAttribute('position', new this.THREE.BufferAttribute(m.vertex.vertices, 3, false));
             if(m.vertex.normals) mesh.setAttribute('normal', new this.THREE.BufferAttribute(m.vertex.normals, 3, true));
-            if(m.vertex.tangents) mesh.setAttribute('tangent', new this.THREE.BufferAttribute(m.vertex.tangents, 4, true));
             if(m.vertex.coords1) mesh.setAttribute(outputUv, new this.THREE.BufferAttribute(m.vertex.coords1, 2, false));
             if(m.vertex.coords&&outputUv!==inputUv) mesh.setAttribute(inputUv, new this.THREE.BufferAttribute(m.vertex.coords, 2, false));
             if(m.index) mesh.setIndex(new this.THREE.BufferAttribute(m.index, 1, false));
-            if(m.subMeshes){
-                console.log(m.subMeshes)
-                if(mesh.groups?.length){
-                    console.warn("xatlas-three: Mesh already has groups, clearing them")
-                    mesh.clearGroups();
-                }
-                for(let subMesh of m.subMeshes) mesh.addGroup(subMesh.start, subMesh.count, subMesh.atlasIndex);
-            }
-            console.log(mesh)
+            if(m.subMeshes) mesh.userData.xAtlasSubMeshes = structuredClone(m.subMeshes);
+            // console.log(mesh)
 
             geometries.push(mesh);
         }
@@ -176,13 +176,19 @@ export abstract class BaseUVUnwrapper{
         this._isUnwrapping = false;
 
         return {
-            atlas,
+            width: atlas.width,
+            height: atlas.height,
+            atlasCount: atlas.atlasCount,
+            // chartCount: atlas.chartCount,
+            meshCount: atlas.meshCount,
+            texelsPerUnit: atlas.texelsPerUnit,
             geometries,
         };
     }
 
     /**
      * Unwraps a geometry to generate uv
+     * Writes to the uv attribute of the geometry by default. Use outputUv to specify the attribute to write to
      * @param geometry
      * @param outputUv
      * @param inputUv

@@ -99,3 +99,15 @@ Note:
 ### Building the project
 
     npm run build
+
+
+## Changelog
+
+### dev
+- Update xatlasjs to 0.2.0
+- `packAtlas` and `unwrapGeometry` methods return the `Atlas` object instead of the list of geometries. Use `atlas.geometries` to get the list of geometries.
+- Any subMesh data (in case of multiple sub-atlas), is saved to `userData.xAtlasSubMeshes` of the geometry.
+- 
+
+### 0.1.0
+- Initial release
