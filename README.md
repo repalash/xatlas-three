@@ -86,6 +86,12 @@ Note:
 * xatlas might add or remove some vertices data.
 * interleaved geometry is not yet supported.
 
+## Nodejs 
+
+Import the `UVUnwrapper` class from `src/unwrapperNodeWorker` and load xatlas.js(`worker.mjs` and `xatlas.wasm`) from node_modules/other local path.
+
+See `./test/node-worker.ts` for an example.
+
 ## Development
 
 ### Installing dependencies
@@ -107,7 +113,7 @@ Note:
 - Update xatlasjs to 0.2.0
 - `packAtlas` and `unwrapGeometry` methods return the `Atlas` object instead of the list of geometries. Use `atlas.geometries` to get the list of geometries.
 - Any subMesh data (in case of multiple sub-atlas), is saved to `userData.xAtlasSubMeshes` of the geometry.
-- 
+- Throws error in-case of invalid inputs.
 
 ### 0.1.0
 - Initial release

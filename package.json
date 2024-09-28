@@ -23,6 +23,6 @@
         "webpack-cli": "^4.9.2",
         "webpack-dev-server": "^4.8.1",
         "comlink": "^4.3.1",
-        "xatlasjs": "^0.2.0-dev.1"
+        "xatlasjs": "^0.2.0"
     }
 }

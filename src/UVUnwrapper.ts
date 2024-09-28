@@ -1,6 +1,7 @@
 import type {BufferGeometry, BufferAttribute, TypedArray} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
+import type {BaseXAtlas} from "./baseXAtlas";
 
 export type Class<T> = new (...args: any[]) => T
 
@@ -40,9 +41,21 @@ export interface Atlas {
     texelsPerUnit: number,
     geometries: (BufferGeometry & {
         userData: BufferGeometry['userData'] & {
-            xAtlasSubMeshes?: { index: number, count: number, materialIndex: number }[]
+            xAtlasSubMeshes?: { index: number, count: number, atlasIndex: number }[]
         }
     })[],
+    meshes: {
+        mesh: string, // uuid
+        vertex: {
+            vertices: number[],
+            normals?: number[],
+            coords?: number[],
+            coords1?: number[],
+        },
+        index?: number[],
+        oldIndexes: number[],
+        subMeshes?: { index: number, count: number, atlasIndex: number }[]
+    }[]
 }
 
 /**
@@ -52,7 +65,7 @@ export interface Atlas {
  * SPDX-License-Identifier: MIT
  */
 export abstract class BaseUVUnwrapper {
-    private xAtlas: XAtlasWebWorker | XAtlasJS;
+    protected xAtlas: XAtlasWebWorker | XAtlasJS | BaseXAtlas;
 
     /**
      *
@@ -224,6 +237,7 @@ export abstract class BaseUVUnwrapper {
             meshCount: atlas.meshCount,
             texelsPerUnit: atlas.texelsPerUnit,
             geometries,
+            meshes: atlas.meshes,
         };
     }
 
