@@ -1,6 +1,6 @@
 {
     "name": "xatlas-three",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "main": "public/build/index.js",
     "module": "public/build/index.js",
     "types": "public/build/index.d.ts",
