@@ -1,4 +1,4 @@
-import type {BufferGeometry, Mesh, BufferAttribute} from "three";
+import type {BufferGeometry, BufferAttribute, TypedArray} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
 
@@ -190,7 +190,7 @@ export abstract class BaseUVUnwrapper {
 
                 // old attribute info
                 const oldAttribute = attributes[ key ] as BufferAttribute;
-                const bufferCons = oldAttribute.array.constructor;
+                const bufferCons = oldAttribute.array.constructor as Class<TypedArray>;
                 const itemSize = oldAttribute.itemSize;
                 const oldArray = oldAttribute.array;
 
