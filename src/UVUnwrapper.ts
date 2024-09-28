@@ -4,7 +4,7 @@ import type {XAtlasJS} from "./XAtlasJS";
 
 export type Class<T> = new (...args: any[]) => T
 
-export interface ChartOptions{
+export interface ChartOptions {
     maxIterations?: number,
     straightnessWeight?: number,
     textureSeamWeight?: number,
@@ -17,7 +17,8 @@ export interface ChartOptions{
     normalSeamWeight?: number,
     fixWinding?: boolean
 }
-export interface PackOptions{
+
+export interface PackOptions {
     maxChartSize?: number,
     padding?: number,
     bilinear?: boolean,
@@ -30,16 +31,18 @@ export interface PackOptions{
     texelsPerUnit?: number
 }
 
-export interface Atlas{
+export interface Atlas {
     width: number,
     height: number,
     atlasCount: number,
     // chartCount: number,
     meshCount: number,
     texelsPerUnit: number,
-    geometries: (BufferGeometry & {userData: BufferGeometry['userData'] & {
-        xAtlasSubMeshes?: {index: number, count: number, materialIndex: number}[]
-    }})[],
+    geometries: (BufferGeometry & {
+        userData: BufferGeometry['userData'] & {
+            xAtlasSubMeshes?: { index: number, count: number, materialIndex: number }[]
+        }
+    })[],
 }
 
 /**
@@ -48,7 +51,7 @@ export interface Atlas{
  * Copyright 2022 repalash
  * SPDX-License-Identifier: MIT
  */
-export abstract class BaseUVUnwrapper{
+export abstract class BaseUVUnwrapper {
     private xAtlas: XAtlasWebWorker | XAtlasJS;
 
     /**
@@ -72,9 +75,11 @@ export abstract class BaseUVUnwrapper{
     ) {
         this.xAtlas = this._createXAtlas()
     }
+
     private _libraryLoaded = false;
-    async loadLibrary(onProgress: (mode: any, progress: any)=>void, wasmFilePath: string, workerFilePath?: string): Promise<void>{
-        if(this._libraryLoaded) return
+
+    async loadLibrary(onProgress: (mode: any, progress: any) => void, wasmFilePath: string, workerFilePath?: string): Promise<void> {
+        if (this._libraryLoaded) return
         await new Promise<void>((resolve, reject) => {
             try {
                 this.xAtlas.init(resolve, onProgress, wasmFilePath, workerFilePath)
@@ -82,7 +87,7 @@ export abstract class BaseUVUnwrapper{
                 reject(e)
             }
         })
-        while (!(this.xAtlas.api ? await this.xAtlas.api.loaded : false)){
+        while (!(this.xAtlas.api ? await this.xAtlas.api.loaded : false)) {
             await new Promise(r => setTimeout(r, 100)); // wait for load just in case
         }
         this._libraryLoaded = true;
@@ -98,15 +103,15 @@ export abstract class BaseUVUnwrapper{
      * @param outputUv - Attribute to write the output uv to
      * @param inputUv - Attribute to write the input uv to (if any)
      */
-    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv'|'uv2' = 'uv2', inputUv: 'uv'|'uv2' = 'uv'): Promise<Atlas>{
-        if(!this._libraryLoaded) {
+    public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv' | 'uv2' = 'uv2', inputUv: 'uv' | 'uv2' = 'uv'): Promise<Atlas> {
+        if (!this._libraryLoaded) {
             throw new Error('xatlas-three: library not loaded');
         }
         if (!nodeList) throw new Error('xatlas-three: nodeList argument not provided');
-        if(nodeList.length < 1) throw new Error('xatlas-three: nodeList must have non-zero length');
+        if (nodeList.length < 1) throw new Error('xatlas-three: nodeList must have non-zero length');
         const useUvs = this.chartOptions.useInputMeshUvs;
 
-        while (this._isUnwrapping){
+        while (this._isUnwrapping) {
             console.log("xatlas-three: unwrapping another mesh, waiting 100 ms");
             await new Promise(r => setTimeout(r, 100));
         }
@@ -120,33 +125,33 @@ export abstract class BaseUVUnwrapper{
         await this.xAtlas.api.createAtlas();
         let meshAdded = [];
         let tag = ""; // for time logging
-        for(let mesh of nodeList){
+        for (let mesh of nodeList) {
             let {uuid, index, attributes} = mesh;
             const scaled = mesh.userData.worldScale || 1; // can be [number, number, number] or number
 
             // if (unwrap === false) continue;
 
             meshAdded.push(uuid);
-            if(!index || !attributes.position || attributes.position!.itemSize !== 3){
+            if (!index || !attributes.position || attributes.position!.itemSize !== 3) {
                 console.warn("xatlas-three: Geometry not supported: ", mesh)
                 continue;
             }
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
-            if(this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, (attributes.position as BufferAttribute).array, attributes.normal ? (attributes.normal as BufferAttribute).array: undefined, attributes.uv ? (attributes.uv as BufferAttribute).array : undefined, uuid, this.useNormals, useUvs, scaled);
-            if(this.timeUnwrap) console.timeEnd(tag);
+            if (this.timeUnwrap) console.time(tag);
+            await this.xAtlas.api.addMesh(index.array, (attributes.position as BufferAttribute).array, attributes.normal ? (attributes.normal as BufferAttribute).array : undefined, attributes.uv ? (attributes.uv as BufferAttribute).array : undefined, uuid, this.useNormals, useUvs, scaled);
+            if (this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
-        if(this.timeUnwrap) console.time(tag);
+        if (this.timeUnwrap) console.time(tag);
         const atlas = await this.xAtlas.api.generateAtlas(this.chartOptions, this.packOptions, true);
-        if(this.timeUnwrap) console.timeEnd(tag);
+        if (this.timeUnwrap) console.timeEnd(tag);
 
         let geometries = [];
 
-        for(let m of atlas.meshes){
+        for (let m of atlas.meshes) {
             let mesh = nodeList.find(n => n.uuid === m.mesh)
-            if(!mesh) {
+            if (!mesh) {
                 console.error("xatlas-three: Geometry not found: ", m.mesh)
                 continue;
             }
@@ -161,12 +166,12 @@ export abstract class BaseUVUnwrapper{
             // if(mesh.getIndex())
             //     mesh.setIndex(null);
 
-            if(m.vertex.vertices) mesh.setAttribute('position', new this.THREE.BufferAttribute(m.vertex.vertices, 3, false));
-            if(m.vertex.normals) mesh.setAttribute('normal', new this.THREE.BufferAttribute(m.vertex.normals, 3, true));
-            if(m.vertex.coords1) mesh.setAttribute(outputUv, new this.THREE.BufferAttribute(m.vertex.coords1, 2, false));
-            if(m.vertex.coords&&outputUv!==inputUv) mesh.setAttribute(inputUv, new this.THREE.BufferAttribute(m.vertex.coords, 2, false));
-            if(m.index) mesh.setIndex(new this.THREE.BufferAttribute(m.index, 1, false));
-            if(m.subMeshes) mesh.userData.xAtlasSubMeshes = structuredClone(m.subMeshes);
+            if (m.vertex.vertices) mesh.setAttribute('position', new this.THREE.BufferAttribute(m.vertex.vertices, 3, false));
+            if (m.vertex.normals) mesh.setAttribute('normal', new this.THREE.BufferAttribute(m.vertex.normals, 3, true));
+            if (m.vertex.coords1) mesh.setAttribute(outputUv, new this.THREE.BufferAttribute(m.vertex.coords1, 2, false));
+            if (m.vertex.coords && outputUv !== inputUv) mesh.setAttribute(inputUv, new this.THREE.BufferAttribute(m.vertex.coords, 2, false));
+            if (m.index) mesh.setIndex(new this.THREE.BufferAttribute(m.index, 1, false));
+            if (m.subMeshes) mesh.userData.xAtlasSubMeshes = structuredClone(m.subMeshes);
             // console.log(mesh)
 
             geometries.push(mesh);
@@ -193,7 +198,7 @@ export abstract class BaseUVUnwrapper{
      * @param outputUv
      * @param inputUv
      */
-    public async unwrapGeometry(geometry: BufferGeometry, outputUv: 'uv'|'uv2' = 'uv', inputUv: 'uv'|'uv2' = 'uv2'){
+    public async unwrapGeometry(geometry: BufferGeometry, outputUv: 'uv' | 'uv2' = 'uv', inputUv: 'uv' | 'uv2' = 'uv2') {
         return this.packAtlas([geometry], outputUv, inputUv);
     }
 
