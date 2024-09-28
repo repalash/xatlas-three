@@ -1,6 +1,10 @@
-const path = require('path')
+import path from 'path';
+import url from 'url';
 
-module.exports = (env)=>({
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default (env)=>({
     mode: 'development',
     devtool: 'source-map',
     entry: env.no_worker ? './src/unwrapperJS.ts' : './src/unwrapperWorker.ts',
