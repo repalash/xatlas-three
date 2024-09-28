@@ -86,11 +86,11 @@ Note:
 * xatlas might add or remove some vertices data.
 * interleaved geometry is not yet supported.
 
-## Nodejs 
+## Nodejs (not tested)
 
 Import the `UVUnwrapper` class from `src/unwrapperNodeWorker` and load xatlas.js(`worker.mjs` and `xatlas.wasm`) from node_modules/other local path.
 
-See `./test/node-worker.ts` for an example.
+See `./test/node-worker.ts` for an example. Run with `npx tsx test/node-worker.ts`
 
 ## Development
 

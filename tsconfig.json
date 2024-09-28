@@ -8,13 +8,20 @@
         "noImplicitAny": true,
         "module": "es2020",
         "strict": true,
+        "rootDir": "./src",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
         "outDir": "./public/build",
         "declarationDir": "./public/build",
         /* Module Resolution Options */
-        "moduleResolution": "node"
+        "moduleResolution": "node",
         /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    }
+    },
+    "include": [
+        "src/"
+    ],
+    "exclude": [
+        "test"
+    ]
 }
