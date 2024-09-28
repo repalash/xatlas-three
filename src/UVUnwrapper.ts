@@ -174,6 +174,42 @@ export abstract class BaseUVUnwrapper {
             if (m.subMeshes) mesh.userData.xAtlasSubMeshes = structuredClone(m.subMeshes);
             // console.log(mesh)
 
+            // convert any remaining buffer attributes
+            const oldIndexes = m.oldIndexes;
+            const attributes = mesh.attributes;
+            for (const key in attributes) {
+                // skip any attributes that have already been set.
+                if (
+                    key === 'position' ||
+                    key === 'normal' ||
+                    key === outputUv ||
+                    key === inputUv
+                ) {
+                    continue;
+                }
+
+                // old attribute info
+                const oldAttribute = attributes[ key ] as BufferAttribute;
+                const bufferCons = oldAttribute.array.constructor;
+                const itemSize = oldAttribute.itemSize;
+                const oldArray = oldAttribute.array;
+
+                // create a new attribute
+                const newArray = new bufferCons(oldIndexes.length * itemSize);
+                const newAttribute = new this.THREE.BufferAttribute(newArray, itemSize, oldAttribute.normalized);
+                newAttribute.gpuType = oldAttribute.gpuType;
+
+                // copy the data
+                for ( let i = 0, l = oldIndexes.length; i < l; i ++ ) {
+                    const index = oldIndexes[ i ];
+                    for ( let c = 0; c < itemSize; c ++ ) {
+                        newArray[ i * itemSize + c ] = oldArray[ index * itemSize + c ];
+                    }
+                }
+
+                mesh.setAttribute(key, newAttribute);
+            }
+
             geometries.push(mesh);
         }
 
