@@ -1,4 +1,4 @@
-import {BufferGeometry, BufferAttribute, InterleavedBufferAttribute, TypedArray} from "three";
+import type {BufferGeometry, BufferAttribute, InterleavedBufferAttribute, TypedArray} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
 import type {BaseXAtlas} from "./baseXAtlas";
