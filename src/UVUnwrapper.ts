@@ -1,4 +1,4 @@
-import type {BufferGeometry, Mesh, BufferAttribute} from "three";
+import {type BufferGeometry, type Mesh, type BufferAttribute, InterleavedBufferAttribute, REVISION} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
 
@@ -28,6 +28,21 @@ export interface PackOptions{
     resolution?: number,
     bruteForce?: boolean,
     texelsPerUnit?: number
+}
+
+function getAttributeArray(attr:BufferAttribute) {
+    if (attr.array instanceof Float32Array && !attr.isInterleavedBufferAttribute) {
+        return attr.array;
+    } else {
+        const itemSize=attr.itemSize;
+        const result=new Float32Array(attr.count * attr.itemSize);
+        for(let i=0,l=attr.count; i<l; i++) {
+            for(let c=0; c<itemSize; c++) {
+                result[itemSize * i + c] = attr.getComponent(i, c);
+            }
+        }
+        return result;
+    }
 }
 
 export abstract class BaseUVUnwrapper{
@@ -119,7 +134,7 @@ export abstract class BaseUVUnwrapper{
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
             if(this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, (attributes.position as BufferAttribute).array, attributes.normal ? (attributes.normal as BufferAttribute).array: undefined, attributes.uv ? (attributes.uv as BufferAttribute).array : undefined, uuid, this.useNormals, useUvs, scaled);
+            await this.xAtlas.api.addMesh(index.array, getAttributeArray(attributes.position as BufferAttribute), attributes.normal ? getAttributeArray(attributes.normal as BufferAttribute): undefined, attributes.uv ? getAttributeArray(attributes.uv as BufferAttribute) : undefined, uuid, this.useNormals, useUvs, scaled);
             if(this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
