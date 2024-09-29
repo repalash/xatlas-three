@@ -32,6 +32,8 @@ export interface PackOptions {
     texelsPerUnit?: number
 }
 
+// Returns a Float32 version of the given attribute array. Creates a new array if the attribute
+// is non-float32 or interleaved.
 function getAttributeArray(attr:BufferAttribute|InterleavedBufferAttribute) {
     if (attr.array instanceof Float32Array && !(attr as InterleavedBufferAttribute).isInterleavedBufferAttribute) {
         return attr.array;
@@ -166,9 +168,9 @@ export abstract class BaseUVUnwrapper {
             }
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
-            if(this.timeUnwrap) console.time(tag);
+            if (this.timeUnwrap) console.time(tag);
             await this.xAtlas.api.addMesh(index.array, getAttributeArray(attributes.position), attributes.normal ? getAttributeArray(attributes.normal): undefined, attributes.uv ? getAttributeArray(attributes.uv) : undefined, uuid, this.useNormals, useUvs, scaled);
-            if(this.timeUnwrap) console.timeEnd(tag);
+            if (this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
         if (this.timeUnwrap) console.time(tag);
