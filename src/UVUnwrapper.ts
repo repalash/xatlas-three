@@ -1,4 +1,4 @@
-import {type BufferGeometry, type Mesh, type BufferAttribute, InterleavedBufferAttribute, TypedArray} from "three";
+import {BufferGeometry, BufferAttribute, InterleavedBufferAttribute, TypedArray} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
 import type {BaseXAtlas} from "./baseXAtlas";
@@ -220,7 +220,6 @@ export abstract class BaseUVUnwrapper {
                 const oldAttribute = attributes[ key ] as BufferAttribute;
                 const bufferCons = oldAttribute.array.constructor as Class<TypedArray>;
                 const itemSize = oldAttribute.itemSize;
-                const oldArray = oldAttribute.array;
 
                 // create a new attribute
                 const newArray = new bufferCons(oldIndexes.length * itemSize);
@@ -231,7 +230,7 @@ export abstract class BaseUVUnwrapper {
                 for ( let i = 0, l = oldIndexes.length; i < l; i ++ ) {
                     const index = oldIndexes[ i ];
                     for ( let c = 0; c < itemSize; c ++ ) {
-                        newArray[ i * itemSize + c ] = oldArray[ index * itemSize + c ];
+                        newAttribute.setComponent(i, c, oldAttribute.getComponent(index, c));
                     }
                 }
 
