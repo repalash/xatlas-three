@@ -32,8 +32,8 @@ export interface PackOptions {
     texelsPerUnit?: number
 }
 
-function getAttributeArray(attr:BufferAttribute) {
-    if (attr.array instanceof Float32Array && !attr.isInterleavedBufferAttribute) {
+function getAttributeArray(attr:BufferAttribute|InterleavedBufferAttribute) {
+    if (attr.array instanceof Float32Array && !(attr as InterleavedBufferAttribute).isInterleavedBufferAttribute) {
         return attr.array;
     } else {
         const itemSize=attr.itemSize;
@@ -167,7 +167,7 @@ export abstract class BaseUVUnwrapper {
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
             if(this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, getAttributeArray(attributes.position as BufferAttribute), attributes.normal ? getAttributeArray(attributes.normal as BufferAttribute): undefined, attributes.uv ? getAttributeArray(attributes.uv as BufferAttribute) : undefined, uuid, this.useNormals, useUvs, scaled);
+            await this.xAtlas.api.addMesh(index.array, getAttributeArray(attributes.position), attributes.normal ? getAttributeArray(attributes.normal): undefined, attributes.uv ? getAttributeArray(attributes.uv) : undefined, uuid, this.useNormals, useUvs, scaled);
             if(this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
