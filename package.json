@@ -1,10 +1,11 @@
 {
     "name": "xatlas-three",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "main": "public/build/index.js",
     "module": "public/build/index.js",
     "types": "public/build/index.d.ts",
-    "soruce": "src/index.ts",
+    "type": "module",
+    "source": "src/index.ts",
     "scripts": {
         "start": "webpack serve",
         "build": "webpack --mode=production",
@@ -13,8 +14,8 @@
     "author": "Palash Bansal <palash@shaders.app> (https://repalash.com/)",
     "license": "MIT",
     "devDependencies": {
-        "@types/three": "^0.162.0",
-        "three": "^0.162.0",
+        "@types/three": "^0.169.0",
+        "three": "^0.169.0",
         "source-map-loader": "^3.0.1",
         "ts-loader": "^9.2.8",
         "typescript": "^4.6.3",
@@ -22,6 +23,6 @@
         "webpack-cli": "^4.9.2",
         "webpack-dev-server": "^4.8.1",
         "comlink": "^4.3.1",
-        "xatlasjs": "^0.1.0"
+        "xatlasjs": "^0.2.0"
     }
 }

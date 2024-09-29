@@ -17,7 +17,7 @@ export class XAtlasWebWorker extends BaseXAtlas {
                         URL.revokeObjectURL(workerUrl);
                     }),
                     proxy((path: string, dir: string) => {
-                        return (path === "xatlas_web.wasm" ? wasmFilePath : path + dir)
+                        return (path === "xatlas.wasm" ? wasmFilePath : path + dir)
                     }),
                     proxy(onProgress))
             )

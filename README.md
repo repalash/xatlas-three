@@ -58,8 +58,8 @@ Next load the [xatlasjs](https://github.com/repalash/xatlas.js) library:
 
 await unwrapper.loadLibrary(
     (mode, progress)=>{console.log(mode, progress);},
-    'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.wasm',
-    'https://cdn.jsdelivr.net/npm/xatlasjs@0.1.0/dist/xatlas.js',
+    'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0/dist/xatlas.wasm',
+    'https://cdn.jsdelivr.net/npm/xatlasjs@0.2.0/dist/xatlas.js',
 ); // Make sure to wait for the library to load before unwrapping.
 
 ```
@@ -86,6 +86,12 @@ Note:
 * xatlas might add or remove some vertices data.
 * interleaved geometry is not yet supported.
 
+## Nodejs (not tested)
+
+Import the `UVUnwrapper` class from `src/unwrapperNodeWorker` and load xatlas.js(`worker.mjs` and `xatlas.wasm`) from node_modules/other local path.
+
+See `./test/node-worker.ts` for an example. Run with `npx tsx test/node-worker.ts`
+
 ## Development
 
 ### Installing dependencies
@@ -99,3 +105,15 @@ Note:
 ### Building the project
 
     npm run build
+
+
+## Changelog
+
+### 0.2.1
+- Update xatlasjs to 0.2.0
+- `packAtlas` and `unwrapGeometry` methods return the `Atlas` object instead of the list of geometries. Use `atlas.geometries` to get the list of geometries.
+- Any subMesh data (in case of multiple sub-atlas), is saved to `userData.xAtlasSubMeshes` of the geometry.
+- Throws error in-case of invalid inputs.
+
+### 0.1.0
+- Initial release
