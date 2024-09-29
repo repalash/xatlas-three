@@ -32,6 +32,24 @@ export interface PackOptions {
     texelsPerUnit?: number
 }
 
+// Convert the geometry index array to the appropriate type for packing.
+function getIndexArray(attr:BufferAttribute) {
+    if (attr.array instanceof Uint16Array) {
+        return attr.array;
+    } else {
+        const array=new Uint16Array(attr.count);
+        for (let i=0, l=array.length; i<l; i++) {
+            const v=attr.getX(i);
+            if (v>=2**16-1) {
+                throw new Error('UVUnwrapper: Index buffer must be convertable to Uint16Array.');
+            }
+
+            array[i]=v;
+        }
+        return array;
+    }
+}
+
 // Returns a Float32 version of the given attribute array. Creates a new array if the attribute
 // is non-float32 or interleaved.
 function getAttributeArray(attr:BufferAttribute|InterleavedBufferAttribute) {
@@ -169,7 +187,7 @@ export abstract class BaseUVUnwrapper {
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
             if (this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, getAttributeArray(attributes.position), attributes.normal ? getAttributeArray(attributes.normal): undefined, attributes.uv ? getAttributeArray(attributes.uv) : undefined, uuid, this.useNormals, useUvs, scaled);
+            await this.xAtlas.api.addMesh(getIndexArray(index), getAttributeArray(attributes.position), attributes.normal ? getAttributeArray(attributes.normal): undefined, attributes.uv ? getAttributeArray(attributes.uv) : undefined, uuid, this.useNormals, useUvs, scaled);
             if (this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
