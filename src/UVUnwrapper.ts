@@ -40,7 +40,7 @@ function getIndexArray(attr:BufferAttribute) {
         const array=new Uint16Array(attr.count);
         for (let i=0, l=array.length; i<l; i++) {
             const v=attr.getX(i);
-            if (v>=2**16-1) {
+            if (v>=2**16) {
                 throw new Error('UVUnwrapper: Index buffer must be convertable to Uint16Array.');
             }
 
