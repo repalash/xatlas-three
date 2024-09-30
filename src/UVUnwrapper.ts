@@ -1,4 +1,4 @@
-import type {BufferGeometry, BufferAttribute, TypedArray} from "three";
+import type {BufferGeometry, BufferAttribute, InterleavedBufferAttribute, TypedArray} from "three";
 import type {XAtlasWebWorker} from "./XAtlasWebWorker";
 import type {XAtlasJS} from "./XAtlasJS";
 import type {BaseXAtlas} from "./baseXAtlas";
@@ -30,6 +30,41 @@ export interface PackOptions {
     resolution?: number,
     bruteForce?: boolean,
     texelsPerUnit?: number
+}
+
+// Convert the geometry index array to the appropriate type for packing.
+function getIndexArray(attr:BufferAttribute) {
+    if (attr.array instanceof Uint16Array) {
+        return attr.array;
+    } else {
+        const array=new Uint16Array(attr.count);
+        for (let i=0, l=array.length; i<l; i++) {
+            const v=attr.getX(i);
+            if (v>=2**16) {
+                throw new Error('UVUnwrapper: Index buffer must be convertable to Uint16Array.');
+            }
+
+            array[i]=v;
+        }
+        return array;
+    }
+}
+
+// Returns a Float32 version of the given attribute array. Creates a new array if the attribute
+// is non-float32 or interleaved.
+function getAttributeArray(attr:BufferAttribute|InterleavedBufferAttribute) {
+    if (attr.array instanceof Float32Array && !(attr as InterleavedBufferAttribute).isInterleavedBufferAttribute) {
+        return attr.array;
+    } else {
+        const itemSize=attr.itemSize;
+        const result=new Float32Array(attr.count * attr.itemSize);
+        for(let i=0,l=attr.count; i<l; i++) {
+            for(let c=0; c<itemSize; c++) {
+                result[itemSize * i + c] = attr.getComponent(i, c);
+            }
+        }
+        return result;
+    }
 }
 
 export interface Atlas {
@@ -152,7 +187,7 @@ export abstract class BaseUVUnwrapper {
             tag = "Mesh" + meshAdded.length + " added to atlas: " + uuid;
             // console.log(typeof index.array)
             if (this.timeUnwrap) console.time(tag);
-            await this.xAtlas.api.addMesh(index.array, (attributes.position as BufferAttribute).array, attributes.normal ? (attributes.normal as BufferAttribute).array : undefined, attributes.uv ? (attributes.uv as BufferAttribute).array : undefined, uuid, this.useNormals, useUvs, scaled);
+            await this.xAtlas.api.addMesh(getIndexArray(index), getAttributeArray(attributes.position), attributes.normal ? getAttributeArray(attributes.normal): undefined, attributes.uv ? getAttributeArray(attributes.uv) : undefined, uuid, this.useNormals, useUvs, scaled);
             if (this.timeUnwrap) console.timeEnd(tag);
         }
         tag = "Generated atlas with " + meshAdded.length + " meshes";
@@ -205,7 +240,6 @@ export abstract class BaseUVUnwrapper {
                 const oldAttribute = attributes[ key ] as BufferAttribute;
                 const bufferCons = oldAttribute.array.constructor as Class<TypedArray>;
                 const itemSize = oldAttribute.itemSize;
-                const oldArray = oldAttribute.array;
 
                 // create a new attribute
                 const newArray = new bufferCons(oldIndexes.length * itemSize);
@@ -216,7 +250,7 @@ export abstract class BaseUVUnwrapper {
                 for ( let i = 0, l = oldIndexes.length; i < l; i ++ ) {
                     const index = oldIndexes[ i ];
                     for ( let c = 0; c < itemSize; c ++ ) {
-                        newArray[ i * itemSize + c ] = oldArray[ index * itemSize + c ];
+                        newAttribute.setComponent(i, c, oldAttribute.getComponent(index, c));
                     }
                 }
 

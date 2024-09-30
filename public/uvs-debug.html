@@ -41,7 +41,8 @@
 <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.139.2/build/three.module.js",
+            "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/": "https://cdn.jsdelivr.net/npm/three@0.169.0/",
             "xatlas-three": "./build/index.js"
         }
     }
@@ -52,10 +53,8 @@
     import * as THREE from 'three';
 
     import {UVUnwrapper} from 'xatlas-three';
-
-    import {UVsDebug} from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/UVsDebug.js';
-    import {mergeVertices} from 'https://cdn.jsdelivr.net/npm/three@0.139.2/examples/jsm/utils/BufferGeometryUtils.js';
-
+    import {UVsDebug} from 'three/examples/jsm/utils/UVsDebug.js';
+    import {mergeVertices, interleaveAttributes} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
     /*
      * This is to help debug UVs problems in geometry,
@@ -98,6 +97,13 @@
             geometry = mergeVertices(geometry); // convert to indexed geometry
         }
 
+        if(location.hash==='#interleaved'){
+            const keys = Object.keys(geometry.attributes);
+            const interleaved = interleaveAttributes(keys.map(key => geometry.attributes[key]));
+            interleaved.forEach((attr,i) => {
+                geometry.setAttribute(keys[i],attr);
+            });
+        }
 
         const d = document.createElement('div');
         const d1 = document.createElement('div');
