@@ -7,10 +7,14 @@ const __dirname = path.dirname(__filename);
 export default (env)=>({
     mode: 'development',
     devtool: 'source-map',
-    entry: env.no_worker ? './src/unwrapperJS.ts' : './src/unwrapperWorker.ts',
-    experiments: {
-            outputModule: true
+    entry: {
+        index: env.no_worker ? './src/unwrapperJS.ts' : './src/unwrapperWorker.ts',
+        node: './src/node.ts',
     },
+    experiments: {
+        outputModule: true
+    },
+    externals: /^node:.+/,
     devServer: {
         hot: false,
         port: 6237,
@@ -25,7 +29,7 @@ export default (env)=>({
         client: false,
     },
     output: {
-        filename: !!env.no_worker ? 'index-no-worker.js' : 'index.js',
+        filename: !!env.no_worker ? '[name]-no-worker.js' : '[name].js',
         module: true,
         path: path.resolve(__dirname, 'public/build'),
         publicPath: '/public/build/',

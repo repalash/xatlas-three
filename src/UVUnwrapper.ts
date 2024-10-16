@@ -89,21 +89,23 @@ export abstract class BaseUVUnwrapper {
         this.xAtlas = this._createXAtlas()
     }
 
-    private _libraryLoaded = false;
+    private _libraryPromise = null;
 
     async loadLibrary(onProgress: (mode: any, progress: any) => void, wasmFilePath: string, workerFilePath?: string): Promise<void> {
-        if (this._libraryLoaded) return
-        await new Promise<void>((resolve, reject) => {
+        if (this._libraryPromise !== null) return
+        this._libraryPromise = new Promise<void>((resolve, reject) => {
             try {
                 this.xAtlas.init(resolve, onProgress, wasmFilePath, workerFilePath)
             } catch (e) {
                 reject(e)
             }
-        })
-        while (!(this.xAtlas.api ? await this.xAtlas.api.loaded : false)) {
-            await new Promise(r => setTimeout(r, 100)); // wait for load just in case
-        }
-        this._libraryLoaded = true;
+        }).then(async () => {
+            while (!(this.xAtlas.api ? await this.xAtlas.api.loaded : false)) {
+                await new Promise(r => setTimeout(r, 100)); // wait for load just in case
+            }
+        });
+
+        await this._libraryPromise
     }
 
     private _isUnwrapping = false;
@@ -117,9 +119,13 @@ export abstract class BaseUVUnwrapper {
      * @param inputUv - Attribute to write the input uv to (if any)
      */
     public async packAtlas(nodeList: BufferGeometry[], outputUv: 'uv' | 'uv2' = 'uv2', inputUv: 'uv' | 'uv2' = 'uv'): Promise<Atlas> {
-        if (!this._libraryLoaded) {
+        if (this._libraryPromise === null) {
             throw new Error('xatlas-three: library not loaded');
         }
+
+        // wait for the library to finish loading
+        await this._libraryPromise
+
         if (!nodeList) throw new Error('xatlas-three: nodeList argument not provided');
         if (nodeList.length < 1) throw new Error('xatlas-three: nodeList must have non-zero length');
         const useUvs = this.chartOptions.useInputMeshUvs;

@@ -14,6 +14,7 @@
         "sourceMap": true,
         "outDir": "./public/build",
         "declarationDir": "./public/build",
+        "esModuleInterop": true,
         /* Module Resolution Options */
         "moduleResolution": "node",
         /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
